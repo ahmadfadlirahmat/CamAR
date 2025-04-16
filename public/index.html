@@ -17,6 +17,7 @@
         transform: translate(-50%, -50%);
         color: white;
         font-family: sans-serif;
+        z-index: 100;
       }
     </style>
   </head>
@@ -24,10 +25,10 @@
     <div id="loading">Memuat AR... Harap tunggu</div>
 
     <a-scene
-      mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiScanning: true"
+      mindar-image="imageTargetSrc: targets.mind; autoStart: true; startMode: ar; uiScanning: true"
       embedded
       color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
+      renderer="colorManagement: true, physicallyCorrectLights: true"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: true"
     >
@@ -38,15 +39,15 @@
 
       <!-- Botol muncul di marker segitiga (index 0) -->
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-gltf-model src="#botol" position="0 0 0" scale="0.2 0.2 0.2" rotation="0 0 0"></a-gltf-model>
+        <a-gltf-model src="#botol" position="0 0 0" scale="0.05 0.05 0.05" rotation="0 0 0"></a-gltf-model>
       </a-entity>
 
       <!-- Sepatu muncul di marker kotak (index 1) -->
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model src="#sepatu" position="0 0 0" scale="0.2 0.2 0.2" rotation="0 0 0"></a-gltf-model>
+        <a-gltf-model src="#sepatu" position="0 0 0" scale="0.05 0.05 0.05" rotation="0 0 0"></a-gltf-model>
       </a-entity>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <a-camera mindar-camera look-controls="enabled: false"></a-camera>
     </a-scene>
 
     <script>

@@ -3,122 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Scan & Tampilan 3D</title>
+  <title>AR 3D Model on Marker</title>
+  <!-- AR.js -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
   <!-- Three.js & GLTFLoader -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/examples/js/loaders/GLTFLoader.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0; padding: 0;
-      background-color: #f4f4f4;
-    }
-    .camera-container {
-      position: relative;
-      width: 100%; height: auto;
-    }
-    #camera {
-      width: 100%; height: auto;
-    }
-    button {
-      position: absolute;
-      bottom: 20px; left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white; border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    #3d-container {
-      margin-top: 30px;
-      width: 100%; height: 400px;
-      background-color: #000;
-    }
+    body { margin: 0; overflow: hidden; }
+    h1 { position: absolute; top: 20px; left: 20px; color: white; font-family: Arial, sans-serif; }
   </style>
 </head>
 <body>
-  <h1>Scan Gambar & Tampilan 3D</h1>
+  <h1>AR 3D Model di atas Marker</h1>
 
-  <div class="camera-container">
-    <video id="camera" autoplay playsinline></video>
-    <button id="capture-btn">Ambil Gambar</button>
-  </div>
-  <canvas id="canvas" style="display:none;"></canvas>
-  <div id="3d-container"></div>
+  <!-- A-Frame AR Setup -->
+  <a-scene embedded arjs>
+    <!-- Definisi Marker -->
+    <a-marker preset="hiro">
+      <!-- Model 3D yang akan ditampilkan di atas marker -->
+      <a-entity 
+        gltf-model="url(sepatu.glb)" 
+        scale="0.5 0.5 0.5" 
+        position="0 0 0" 
+        rotation="0 0 0">
+      </a-entity>
+    </a-marker>
 
-  <script>
-    // --- CAMERA SETUP: pakai kamera belakang dengan fallback ---
-    const video = document.getElementById('camera');
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: "environment" } }
-        });
-        video.srcObject = stream;
-      } catch(err) {
-        console.warn("Kamera belakang gagal, pakai default:", err);
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-      }
-    }
-    startCamera();
+    <!-- Kamera untuk AR -->
+    <a-entity camera></a-entity>
+  </a-scene>
 
-    // --- CAPTURE BUTTON: ambil snapshot ke canvas ---
-    const captureBtn = document.getElementById('capture-btn');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    captureBtn.addEventListener('click', () => {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      console.log(canvas.toDataURL('image/png'));
-    });
-
-    // --- THREE.JS 3D SCENE SETUP ---
-    let scene, cam3d, renderer, loader, models = [];
-    function init3D() {
-      scene = new THREE.Scene();
-      cam3d = new THREE.PerspectiveCamera(75, window.innerWidth / 400, 0.1, 1000);
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, 400);
-      document.getElementById('3d-container').appendChild(renderer.domElement);
-
-      loader = new THREE.GLTFLoader();
-      const modelFiles = ['sepatu.glb', 'ultramen.glb', 'bor.glb'];
-      modelFiles.forEach((file, i) => {
-        loader.load(file, gltf => {
-          const m = gltf.scene;
-          m.scale.set(0.5, 0.5, 0.5);
-          m.position.set(i * 2 - 2, 0, 0); // -2,0,0 | 0,0,0 | 2,0,0
-          scene.add(m);
-          models.push(m);
-        }, undefined, err => console.error(err));
-      });
-
-      scene.add(new THREE.AmbientLight(0x404040, 5));
-      const dir = new THREE.DirectionalLight(0xffffff, 1);
-      dir.position.set(5,5,5);
-      scene.add(dir);
-
-      cam3d.position.z = 5;
-      animate();
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      models.forEach(m => {
-        m.rotation.x += 0.01;
-        m.rotation.y += 0.01;
-      });
-      renderer.render(scene, cam3d);
-    }
-
-    init3D();
-  </script>
 </body>
 </html>

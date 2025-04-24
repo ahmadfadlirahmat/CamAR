@@ -4,35 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Scan & Tampilan 3D</title>
+  <!-- Three.js & GLTFLoader -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/examples/js/loaders/GLTFLoader.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       background-color: #f4f4f4;
     }
     .camera-container {
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: auto;
     }
     #camera {
-      width: 100%;
-      height: auto;
+      width: 100%; height: auto;
     }
     button {
       position: absolute;
-      bottom: 20px;
-      left: 50%;
+      bottom: 20px; left: 50%;
       transform: translateX(-50%);
       padding: 10px 20px;
       font-size: 16px;
       background-color: #4CAF50;
-      color: white;
-      border: none;
+      color: white; border: none;
       cursor: pointer;
     }
     button:hover {
@@ -40,9 +36,8 @@
     }
     #3d-container {
       margin-top: 30px;
+      width: 100%; height: 400px;
       background-color: #000;
-      width: 100%;
-      height: 400px;
     }
   </style>
 </head>
@@ -50,37 +45,42 @@
   <h1>Scan Gambar & Tampilan 3D</h1>
 
   <div class="camera-container">
-    <video id="camera" autoplay></video>
+    <video id="camera" autoplay playsinline></video>
     <button id="capture-btn">Ambil Gambar</button>
   </div>
   <canvas id="canvas" style="display:none;"></canvas>
-
   <div id="3d-container"></div>
 
   <script>
-    // --- CAMERA SETUP ---
+    // --- CAMERA SETUP: pakai kamera belakang dengan fallback ---
     const video = document.getElementById('camera');
-    const captureBtn = document.getElementById('capture-btn');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
     async function startCamera() {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { exact: "environment" } }
+        });
+        video.srcObject = stream;
+      } catch(err) {
+        console.warn("Kamera belakang gagal, pakai default:", err);
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      }
     }
     startCamera();
 
+    // --- CAPTURE BUTTON: ambil snapshot ke canvas ---
+    const captureBtn = document.getElementById('capture-btn');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
     captureBtn.addEventListener('click', () => {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = canvas.toDataURL('image/png');
-      console.log(imageData);
+      console.log(canvas.toDataURL('image/png'));
     });
 
     // --- THREE.JS 3D SCENE SETUP ---
     let scene, cam3d, renderer, loader, models = [];
-
     function init3D() {
       scene = new THREE.Scene();
       cam3d = new THREE.PerspectiveCamera(75, window.innerWidth / 400, 0.1, 1000);
@@ -94,19 +94,19 @@
         loader.load(file, gltf => {
           const m = gltf.scene;
           m.scale.set(0.5, 0.5, 0.5);
-          m.position.set(i * 2 - 2, 0, 0); // posisi: -2,0,0 | 0,0,0 | 2,0,0
+          m.position.set(i * 2 - 2, 0, 0); // -2,0,0 | 0,0,0 | 2,0,0
           scene.add(m);
           models.push(m);
         }, undefined, err => console.error(err));
       });
 
-      // lights
       scene.add(new THREE.AmbientLight(0x404040, 5));
       const dir = new THREE.DirectionalLight(0xffffff, 1);
       dir.position.set(5,5,5);
       scene.add(dir);
 
       cam3d.position.z = 5;
+      animate();
     }
 
     function animate() {
@@ -119,7 +119,6 @@
     }
 
     init3D();
-    animate();
   </script>
 </body>
 </html>

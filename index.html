@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebAR </title>
+  <title>WebAR</title>
 
   <!-- Load A-Frame & AR.js -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -12,14 +12,15 @@
 </head>
 
 <body style="margin: 0; overflow: hidden;">
-  <a-scene embedded arjs>
+  <!-- Pakai kamera belakang biar lebih wide -->
+  <a-scene embedded arjs="sourceType: webcam; facingMode: environment;">
     
     <!-- Deteksi marker custom -->
     <a-marker type="pattern" url="marker/marker_kustom.patt">
       <a-entity 
         gltf-model="model/ultramen.glb"
-        scale="2 2 2"
-        position="0 0 0">
+        scale="1 1 1"
+        position="0 0 -2">
       </a-entity>
     </a-marker>
 
@@ -29,4 +30,3 @@
 </body>
 
 </html>
-

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AR 3D Model on Marker</title>
+  <title>AR 3D Model di atas Marker</title>
   <!-- AR.js -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
   <!-- Three.js & GLTFLoader -->
@@ -21,11 +21,27 @@
   <a-scene embedded arjs>
     <!-- Definisi Marker -->
     <a-marker preset="hiro">
-      <!-- Model 3D yang akan ditampilkan di atas marker -->
+      <!-- Model 3D pertama (sepatu) -->
       <a-entity 
         gltf-model="url(sepatu.glb)" 
         scale="0.5 0.5 0.5" 
         position="0 0 0" 
+        rotation="0 0 0">
+      </a-entity>
+
+      <!-- Model 3D kedua (ultramen) -->
+      <a-entity 
+        gltf-model="url(ultramen.glb)" 
+        scale="0.5 0.5 0.5" 
+        position="2 0 0" 
+        rotation="0 0 0">
+      </a-entity>
+
+      <!-- Model 3D ketiga (bor) -->
+      <a-entity 
+        gltf-model="url(bor.glb)" 
+        scale="0.5 0.5 0.5" 
+        position="-2 0 0" 
         rotation="0 0 0">
       </a-entity>
     </a-marker>
